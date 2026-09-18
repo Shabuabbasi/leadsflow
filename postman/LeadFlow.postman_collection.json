@@ -1,0 +1,128 @@
+{
+  "info": {
+    "name": "LeadFlow API",
+    "description": "Requests for WordPress ingestion, CRM management, analytics, and export.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "apiSecret", "value": "my_jwt_or_secret_token" },
+    { "key": "token", "value": "" },
+    { "key": "leadId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+    },
+    {
+      "name": "Login",
+      "event": [{
+        "listen": "test",
+        "script": { "exec": ["pm.collectionVariables.set('token', pm.response.json().token);"] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\":\"admin@leadflow.local\",\"password\":\"admin123\"}"
+        },
+        "url": "{{baseUrl}}/api/auth/login"
+      }
+    },
+    {
+      "name": "Create Lead (WordPress)",
+      "event": [{
+        "listen": "test",
+        "script": { "exec": ["pm.collectionVariables.set('leadId', pm.response.json().lead.id);"] }
+      }],
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{apiSecret}}", "type": "string" }]
+        },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Postman Lead\",\"email\":\"postman-{{$timestamp}}@example.com\",\"phone\":\"03001234567\",\"service\":\"Web Development\",\"budgetRange\":\"$5000+\",\"message\":\"We need a complete business website and would like to begin this month.\"}"
+        },
+        "url": "{{baseUrl}}/api/leads"
+      }
+    },
+    {
+      "name": "Create Lead (Dashboard)",
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+        },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Manual Lead\",\"email\":\"manual-{{$timestamp}}@example.com\",\"phone\":\"03001234567\",\"service\":\"UI/UX Design\",\"budgetRange\":\"$1000 - $5000\",\"message\":\"Please redesign our product experience.\"}"
+        },
+        "url": "{{baseUrl}}/api/leads"
+      }
+    },
+    {
+      "name": "List Leads",
+      "request": {
+        "method": "GET",
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+        },
+        "url": "{{baseUrl}}/api/leads?page=1&limit=10&status=all&minScore=0&q="
+      }
+    },
+    {
+      "name": "Get Lead Details",
+      "request": {
+        "method": "GET",
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+        },
+        "url": "{{baseUrl}}/api/leads/{{leadId}}"
+      }
+    },
+    {
+      "name": "Update Lead Status",
+      "request": {
+        "method": "PATCH",
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+        },
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"status\":\"qualified\"}" },
+        "url": "{{baseUrl}}/api/leads/{{leadId}}"
+      }
+    },
+    {
+      "name": "Lead Insights",
+      "request": {
+        "method": "GET",
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+        },
+        "url": "{{baseUrl}}/api/analytics/insights"
+      }
+    },
+    {
+      "name": "Export Leads CSV",
+      "request": {
+        "method": "GET",
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+        },
+        "url": "{{baseUrl}}/api/leads/export.csv"
+      }
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+<main class="shell">
+  <header>
+    <div>
+      <p class="eyebrow">Angular adaptability task</p>
+      <h1>Lead Insights</h1>
+    </div>
+    @if (token) {
+      <button class="secondary" type="button" (click)="logout()">Sign out</button>
+    }
+  </header>
+
+  @if (liveNotice()) {
+    <p class="live-notice">{{ liveNotice() }}</p>
+  }
+
+  @if (!token) {
+    <form class="panel login" (ngSubmit)="login()">
+      <h2>Admin sign in</h2>
+      <p>Authentication uses the same JWT endpoint as the React CRM.</p>
+      <label>
+        Email
+        <input type="email" name="email" [(ngModel)]="email" required />
+      </label>
+      <label>
+        Password
+        <input type="password" name="password" [(ngModel)]="password" required />
+      </label>
+      <button [disabled]="loading()">{{ loading() ? 'Signing in…' : 'Sign in' }}</button>
+    </form>
+  } @else if (loading()) {
+    <section class="panel state">Loading lead insights…</section>
+  } @else if (insights(); as data) {
+    <section class="summary">
+      <article class="metric total">
+        <span>Total leads</span>
+        <strong>{{ data.total }}</strong>
+      </article>
+      @for (status of statuses; track status) {
+        <article class="metric">
+          <span>{{ status }}</span>
+          <strong>{{ data.countsByStatus[status] || 0 }}</strong>
+        </article>
+      }
+    </section>
+
+    <section class="panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Highest priority</p>
+          <h2>Top 5 leads by score</h2>
+        </div>
+        <button class="secondary" type="button" (click)="loadInsights()">Refresh</button>
+      </div>
+
+      @if (data.topLeads.length === 0) {
+        <p class="state">No leads are available yet.</p>
+      } @else {
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Lead</th><th>Status</th><th>Source</th><th>Score</th></tr>
+            </thead>
+            <tbody>
+              @for (lead of data.topLeads; track lead.id) {
+                <tr>
+                  <td><strong>{{ lead.name }}</strong><small>{{ lead.email }}</small></td>
+                  <td class="capitalize">{{ lead.status }}</td>
+                  <td class="capitalize">{{ lead.source }}</td>
+                  <td><span class="score">{{ lead.leadScore }}</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+</main>

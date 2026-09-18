@@ -1,0 +1,26 @@
+{
+  "name": "leadflow-angular-insights",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "ng serve --port 4200",
+    "build": "ng build"
+  },
+  "dependencies": {
+    "@angular/common": "20.3.31",
+    "@angular/compiler": "20.3.31",
+    "@angular/core": "20.3.31",
+    "@angular/forms": "20.3.31",
+    "@angular/platform-browser": "20.3.31",
+    "rxjs": "^7.8.2",
+    "socket.io-client": "^4.8.3",
+    "tslib": "^2.8.1",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular/build": "20.3.37",
+    "@angular/cli": "20.3.37",
+    "@angular/compiler-cli": "20.3.31",
+    "typescript": "5.9.3"
+  }
+}
