@@ -1,4 +1,5 @@
 import { Server } from 'socket.io';
+import { corsOriginDelegate } from './config/cors.js';
 
 let io = null;
 
@@ -9,13 +10,8 @@ let io = null;
 export function initSocket(httpServer) {
   io = new Server(httpServer, {
     cors: {
-      origin: [
-        process.env.CLIENT_URL || 'http://localhost:5173',
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        'http://localhost:4200',
-        'http://127.0.0.1:4200',
-      ],
+      origin: corsOriginDelegate,
+      credentials: true,
     },
   });
 
